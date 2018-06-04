@@ -1,2 +1,3 @@
 # Actuator-Package
-FlexSEA Rigid actuator package library and sample programs for Python
+FlexSEA-Rigid Actuator Package library and sample programs
+Please refer to http://dephy.com/wiki/flexsea/doku.php (direct link: http://dephy.com/wiki/flexsea/doku.php?id=actpackpython) for all the details.

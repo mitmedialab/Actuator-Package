@@ -1,11 +1,9 @@
-# FlexSEA_Example_FP-TPC1
-#=-=-=-=-=-=-=-=-=-=-=-=
-# This script will start by sending a FindPoles calibration command to Ex
-# Only intended use is for projects with relative encoders! 
-# Motor will switch between holding the starting position and another position.
+# FlexSEA_Example_Pocket_1
+#=-=-=-=-=-=-=-=-=-=-=-=-=
 # Major sensors will be displayed on the terminal.
+# Setpoint comes from CSV file
 # Hit Ctrl+C to exit
-# 2018/02/22, Dephy, Inc.
+# 2018/03/15, Dephy, Inc.
 
 import serial
 from time import perf_counter, sleep
@@ -13,22 +11,24 @@ from pyFlexSEA import *
 import os
 import sys
 import sched
+import csv
 
 # User setup:
 COM = comPortFromFile()
 refreshRate = 0.005		# seconds, communication & FSM
 displayDiv = 5			# We refresh the display every 50th packet
 flexSEAScheduler = sched.scheduler(perf_counter, sleep)
+csvFilename = 'ext/sine.csv';
 
 # position controller gains:
-pos_KP = 20 		# proportional gain
-pos_KI = 6 			# integral gain
-deltaPos = 10000	# Position difference
+pos_KP = 800 		# proportional gain
+pos_KI = 5 		# integral gain
+deltaPos = 300		# Position difference
 
 # This is called by the timer:
 def timerEvent():
 	# Read data & display it:
-	i = readActPack(0, 2, displayDiv)
+	i = readPocket(0, 2, displayDiv)
 	if i == 0:
 		print('\nFSM State =', state)
 	# Call state machine:
@@ -38,9 +38,8 @@ def timerEvent():
 # State machine
 state = 'init'
 fsmLoopCounter = 0
-stateTime = 300
+stateTime = 400
 hold_position_a = 0
-hold_position_b = 0
 
 def stateMachineDemo1():
 
@@ -61,34 +60,29 @@ def stateMachineDemo1():
 
 	elif state == 'setController':
 		# Set Control mode to Position
-		print('Setting controller to Position...')
-		setControlMode(CTRL_POSITION)
-		setZGains(pos_KP, pos_KI, 0, 0)
-		hold_position_a = myRigid.ex.enc_ang[0]
-		hold_position_b = hold_position_a + deltaPos
-		setPosition(hold_position_a) # Start where we are
+		print('Setting controllers: Right = Open, Left = Position...')
+		setControlMode(CTRL_OPEN, RIGHT)
+		setControlMode(CTRL_POSITION, LEFT)
+		setZGains(pos_KP, pos_KI, 0, 0, LEFT)
+		hold_position_a = myPocket.ex[LEFT].enc_ang[0]
+		setPosition(hold_position_a, LEFT) # Start where we are
 		
 		# Transition:
-		state = 'hold_a'
+		state = 'trackCSV'
+		fsmLoopCounter = 0
 
-	elif state == 'hold_a':
-		# Equilibrium position
-		setPosition(hold_position_a)
-	
-		# Transition:
-		fsmLoopCounter += 1
-		if(fsmLoopCounter > stateTime):
-			state = 'hold_b'
-			fsmLoopCounter = 0
+	elif state == 'trackCSV':
 
-	elif state == 'hold_b':
-		setPosition(hold_position_b)
-	
-		# Transition:
 		fsmLoopCounter += 1
-		if(fsmLoopCounter > stateTime):
-			state = 'hold_a'
-			fsmLoopCounter = 0
+		if(fsmLoopCounter >= csvLen):
+				fsmLoopCounter = 0
+	
+		sOpen = int(csvSetpoint[fsmLoopCounter])
+		sPos = int(csvSetpoint[fsmLoopCounter]) + hold_position_a
+		setMotorVoltage(sOpen, RIGHT)
+		setPosition(sPos, LEFT)
+	
+		# No transition, stay here forever
 
 	else:
 		# Invalid state - stay here and complain
@@ -108,6 +102,14 @@ def beforeExiting():
 print('\nDemo code - Python project with FlexSEA-Stack DLL')
 print('====================================================\n')
 
+# Open CSV file
+csvSetpoint = []
+csvFile = open(csvFilename)
+reader = csv.reader(csvFile, delimiter=',')
+for row in reader:
+	csvSetpoint.append(row[2])
+csvLen = len(csvSetpoint)
+
 # Open serial port:
 hser = serial.Serial(COM)
 print('Opened', hser.portstr)
@@ -116,23 +118,6 @@ print('Opened', hser.portstr)
 print('Initializing FlexSEA stack...')
 initPyFlexSEA()
 setPyFlexSEASerialPort(hser) #Pass com handle to pyFlexSEA
-sleep(0.1)
-
-#Disable FSM2 (doing it twice to be sure):
-print('Disabling FSM2...')
-actPackFSM2(0)
-sleep(0.1)
-actPackFSM2(0)
-sleep(0.1)
-
-#Send calibration command (blocking for 60s)
-print('Finding poles...')
-findPoles(1)
-
-actPackFSM2(1)
-sleep(0.1)
-hser.reset_input_buffer()
-hser.reset_output_buffer()
 sleep(0.1)
 
 # Background: read Rigid and call FSM at 100Hz:

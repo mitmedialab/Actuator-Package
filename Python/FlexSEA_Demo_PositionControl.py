@@ -13,15 +13,14 @@ import sys
 import sched
 
 # User setup:
-# COM = '/dev/ttyACM0' # for Linux/Raspbian
-COM = 'COM5' # for windows
+COM = comPortFromFile()
 refreshRate = 0.005   # seconds, communication & FSM
 displayDiv = 5       # We refresh the display every 50th packet
 flexSEAScheduler = sched.scheduler(perf_counter, sleep)
 
 # position controller gains:
-pos_KP = 20 # proportional gain
-pos_KI = 6 # integral gain
+pos_KP = 50 # proportional gain
+pos_KI = 3 # integral gain
 
 # This is called by the timer:
 def timerEvent():

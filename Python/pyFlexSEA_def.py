@@ -118,6 +118,17 @@ class rigid_s(Structure):
 					("ctrl", fx_rigid_ctrl_s),
 					("lastOffsetDecoded", c_uint8)]
 
+class pocket_s(Structure):
+					_fields_ = [("re", fx_rigid_re_s),
+					("mn", fx_rigid_mn_s),
+					("ex", fx_rigid_ex_s * 2),
+					("ctrl", fx_rigid_ctrl_s),
+					("lastOffsetDecoded", c_uint8)]
+
+class user_data_s(Structure):
+		_fields_ = [("r", c_int32 * 4),
+					("w", c_int32 * 4)]
+
 #Constants:
 FLEXSEA_PLAN_1 = 10
 FLEXSEA_MANAGE_1 = 20
@@ -135,3 +146,5 @@ CHANGE = 1
 SYS_NORMAL = 0
 SYS_DISABLE_FSM2 = 1
 CALIBRATION_FIND_POLES = 1
+RIGHT = 0
+LEFT = 1
