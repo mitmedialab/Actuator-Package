@@ -1,6 +1,6 @@
 # code for dyno testing
 # Rebecca McCabe 1-16-19
-# Last updated 1-25-19
+# Last updated 1-31-19
 
 from time import sleep, ctime
 import random, csv
@@ -13,14 +13,14 @@ from flexseapython.pyFlexsea import *
 from flexseapython.pyFlexsea_def import *
 from flexseapython.fxUtil import *
 
-###################### TEST PARAMETERS ##########################################
+###################### EXPERIMENT PARAMETERS ##########################################
 
 deltaRpmThreshold = 10 # expected delta rpm from reading to reading with no acceleration. Assume equilibrium when the delta rpm is below this threshold.
 readingTime = .05   # period in seconds with which to read velocities to detect equilibrium. If this is too small, the code will presume that the deltaRpm is due to noise when it really is due to acceleration. 
 
 testVmin = 1
 testVmax = 4.6
-testVstep = .2
+testVstep = .6
 testVs = np.arange(testVmin, testVmax+testVstep, testVstep)
 
 loadVmin = 1
@@ -30,20 +30,27 @@ loadVs = np.arange(loadVmin, loadVmax+loadVstep, loadVstep)
 
 ################### DATA STREAM PARAMETERS ######################################
 
-labels = ["torque", "testVmeas", "time", "encVelocity", "encAngle"]
+labels = ["torque", "time", "encAngle", "encVelocity", "encAccel", \
+"motorCurrent", "motorVoltage", "batteryVoltage", "batteryCurrent"]
 
 varsToStream = [ 							\
 	FX_GEN_VAR_0,							\
-	FX_MOT_VOLT,							\
 	FX_STATETIME,							\
+	FX_ENC_ANG,								\
 	FX_ENC_VEL,								\
-	FX_ENC_ANG								\
+	FX_ENC_ACC,								\
+	FX_MOT_CURR,							\
+	FX_MOT_VOLT,							\
+	FX_BATT_VOLT,							\
+	FX_BATT_CURR,							\
 ]
 
 ENCODER_COUNT_PER_REV = 16384 # 2^14 because 14 bits
 CLOCK_COUNT_PER_SEC = 1882 # determined experimentally by comparing STATETIME readings with python datetime
+MS_PER_MIN = 1000 * 60 # convert units of time
+TORQUE_NM_PER_COUNT = 4096 # 2^12
 
-dataNames = ["testV", "loadV", "myRpm", "theirRpm", "torque", "testVmeas", "time"] #TODO: eventually add temp and current
+dataNames = ["testV", "loadV", "rpm", "torque", "time", "motorVoltage", "motorCurrent", "batteryVoltage", "batteryCurrent"] #TODO: eventually add temp
 numDataPts = len(testVs)*len(loadVs)
 data = np.zeros((len(dataNames),numDataPts))
 
@@ -52,7 +59,7 @@ data = np.zeros((len(dataNames),numDataPts))
 
 def setV(motorID, volts):
 	mV = volts * 1000
-	#setMotorVoltage(motorID, mV)
+	setMotorVoltage(motorID, mV)
 	print('Passed voltage ', volts, ' to the ', motorID, ' motor.')
 
 def getRPM(motorID):
@@ -123,12 +130,14 @@ def dynoRun(testID):
 				rpmOld = rpmNew
 			print('Equilibrium reached.\n')	
 
-			[torque, testVmeas, time, encVel, encAng] = fxReadDevice(testID, varsToStream)
+			[torque, time, encAng, encVel, encAccel, motCur, motVol, batVol, batCur] = fxReadDevice(testID, varsToStream)
 			print('got data')
-			data[:,counter] = [testV, loadV, rpmNew, encVel, torque, testVmeas, time]
+			torque = torque * TORQUE_NM_PER_COUNT # convert from ticks to Nm
+			encVel = encVel * MS_PER_MIN / ENCODER_COUNT_PER_REV # convert from ticks/ms to rpm
+
+			data[:,counter] = [testV, loadV, encVel, torque, time, motVol, motCur, batVol, batCur]
 			counter+=1
 	
-	print(dataNames)
 	makeCSV(dataNames, data)
 	
 	print('Turning off control...')
