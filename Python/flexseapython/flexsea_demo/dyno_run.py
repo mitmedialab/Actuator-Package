@@ -63,6 +63,7 @@ def setV(motorID, volts):
 	print('Passed voltage ', volts, ' to the ', motorID, ' motor.')
 
 def getRPM(motorID):
+	# TODO delete this function and just use the encVel and encAcc that gets streamed
 	angOld = None
 	while angOld == None: # wait until it is reading data
 		[angOld, timeOld] = fxReadDevice(motorID, [FX_ENC_ANG, FX_STATETIME])
