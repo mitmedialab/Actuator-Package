@@ -1,0 +1,20 @@
+
+global_emg_ip: &global_emg_ip '169.254.241.243'
+global_emg_port: &global_emg_port !!int 5005
+model_globalpath: &model_globalpath '\\hub.media.mit.edu\\groups\\biomech\\private\\syeon\\DeepLearningLib\\Model\\'
+# model_global_loadpath: &model_global_loadpath ''
+
+rt1:
+    model_path: *model_globalpath
+    # model_name: 'emg_LSTM1_h32_train_D8A_val_D9Adt256_dtype_raw\\epoch_12.pt'
+    # model_name: 'emg_LSTM1_h32_train_D8A_val_D9Adt256_dtype_corr\\epoch_12.pt'
+    model_name : 'emg_LSTM1_h128_train_D1_val_D2dt256_dtype_raw\\epoch_2.pt'
+
+    emg_port: *global_emg_port
+    emg_ip: *global_emg_ip
+
+    robot_ip: *global_emg_ip
+    robot_port: !!int 5006
+
+    vis_ip: 'localhost'
+    vis_port: !!int 10000

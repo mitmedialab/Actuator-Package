@@ -1,0 +1,20 @@
+{
+  "logger": {
+    "title": "Remote Sync"
+  },
+  "uploadOnSave": true,
+  "useAtomicWrites": false,
+  "deleteLocal": false,
+  "hostname": "169.254.224.234",
+  "port": "22",
+  "target": "/home/pi/workspacepi/biomech_Actuator-Package",
+  "ignore": [
+    ".remote-sync.json",
+    ".git/**",
+    "*.bin"
+  ],
+  "username": "pi",
+  "password": "qwerasdf",
+  "watch": [],
+  "transport": "scp"
+}
