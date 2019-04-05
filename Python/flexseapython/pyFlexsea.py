@@ -52,7 +52,7 @@ def fxStopStreaming(devId):
 # Note: changing the stream variables during a logged stream has undefined behaviour
 # params:
 # 		devId 		: the id of the device to set fields for
-# 		fieldIds 	: a list containing the fields to stream 
+# 		fieldIds 	: a list containing the fields to stream
 def fxSetStreamVariables(devId, fieldIds):
 	global flexsea
 	c_fi, c_n = list_to_int_arr(fieldIds)
@@ -61,13 +61,13 @@ def fxSetStreamVariables(devId, fieldIds):
 # Reads the most recent data received from the device
 # params:
 # 		devId 		: the id of the device to read
-# 		fieldIds 	: a list containing the fields to read 
+# 		fieldIds 	: a list containing the fields to read
 # returns:
-# 		a python list containing the values of the requested fields 
+# 		a python list containing the values of the requested fields
 #		(in the order requested), or None for fields that errored
 def fxReadDevice(devId, fieldIds):
 	global flexsea
-	n = len(fieldIds)	
+	n = len(fieldIds)
 
 	c_fieldIds, c_n = list_to_int_arr(fieldIds)
 	c_successBools, c_n = list_to_bool_arr( [0] * n )
@@ -85,7 +85,7 @@ def fxReadDevice(devId, fieldIds):
 
 # Sets the control mode for the given device
 # params:
-# 		devId 		: the id of the device 
+# 		devId 		: the id of the device
 # 		ctrlMode 	: the control mode to use [must be one of values provided in pyFlexsea_def.py]
 def setControlMode(devId, ctrlMode):
 	global flexsea
@@ -93,7 +93,7 @@ def setControlMode(devId, ctrlMode):
 
 # Sets the voltage setpoint for the given device
 # params:
-# 		devId 		: the id of the device 
+# 		devId 		: the id of the device
 from ctypes import *
 import os
 import sys
@@ -148,7 +148,7 @@ def fxStopStreaming(devId):
 # Note: changing the stream variables during a logged stream has undefined behaviour
 # params:
 # 		devId 		: the id of the device to set fields for
-# 		fieldIds 	: a list containing the fields to stream 
+# 		fieldIds 	: a list containing the fields to stream
 def fxSetStreamVariables(devId, fieldIds):
 	global flexsea
 	c_fi, c_n = list_to_int_arr(fieldIds)
@@ -157,13 +157,13 @@ def fxSetStreamVariables(devId, fieldIds):
 # Reads the most recent data received from the device
 # params:
 # 		devId 		: the id of the device to read
-# 		fieldIds 	: a list containing the fields to read 
+# 		fieldIds 	: a list containing the fields to read
 # returns:
-# 		a python list containing the values of the requested fields 
+# 		a python list containing the values of the requested fields
 #		(in the order requested), or None for fields that errored
 def fxReadDevice(devId, fieldIds):
 	global flexsea
-	n = len(fieldIds)	
+	n = len(fieldIds)
 
 	c_fieldIds, c_n = list_to_int_arr(fieldIds)
 	c_successBools, c_n = list_to_bool_arr( [0] * n )
@@ -181,7 +181,7 @@ def fxReadDevice(devId, fieldIds):
 
 # Sets the control mode for the given device
 # params:
-# 		devId 		: the id of the device 
+# 		devId 		: the id of the device
 # 		ctrlMode 	: the control mode to use [must be one of values provided in pyFlexsea_def.py]
 def setControlMode(devId, ctrlMode):
 	global flexsea
@@ -189,7 +189,7 @@ def setControlMode(devId, ctrlMode):
 
 # Sets the voltage setpoint for the given device
 # params:
-# 		devId 		: the id of the device 
+# 		devId 		: the id of the device
 # 		mV 			: the voltage to set in milliVolts
 def setMotorVoltage(devId, mV):
 	global flexsea
@@ -197,7 +197,7 @@ def setMotorVoltage(devId, mV):
 
 # Sets the current setpoint for the given device
 # params:
-# 		devId 		: the id of the device 
+# 		devId 		: the id of the device
 # 		cur			: the current to use as setpoint in milliAmps
 def setMotorCurrent(devId, cur):
 	global flexsea
@@ -205,7 +205,7 @@ def setMotorCurrent(devId, cur):
 
 # Sets the position setpoint for the given device
 # params:
-# 		devId 		: the id of the device 
+# 		devId 		: the id of the device
 # 		pos			: the absolute encoder position to use as setpoint
 def setPosition(devId, pos):
 	global flexsea
@@ -213,7 +213,7 @@ def setPosition(devId, pos):
 
 # Sets the PID controller gains for the given device
 # params:
-# 		devId 		: the id of the device 
+# 		devId 		: the id of the device
 # 		z_k			: the proportional gain to set for the active setpoint
 # 		z_b			: the integral gain to set for the active setpoint
 # 		i_kp		: the proportional gain to set for the underlying current controller (only relevant for impedance control)
@@ -224,7 +224,7 @@ def setZGains(devId, z_k, z_b, i_kp, i_ki):
 
 # Sets the activation state for FSM2 on the given device
 # params:
-# 		devId 		: the id of the device 
+# 		devId 		: the id of the device
 # 		on			: whether to set the FSM on or off
 def actPackFSM2(devId, on):
 	global flexsea
@@ -232,7 +232,7 @@ def actPackFSM2(devId, on):
 
 # Tells the given device to run a find poles routine
 # params:
-# 		devId 		: the id of the device 
+# 		devId 		: the id of the device
 # 		block 		: whether to block for 60 seconds while the device runs the routine
 def findPoles(devId, block):
 	global flexsea
@@ -261,7 +261,7 @@ def loadFlexsea():
 		if(is_64bits):
 			librarypath = lpath_base + '/unix64/libfx_plan_stack.so'
 		else:
-			librarypath = lpath_base + '/unix/libfx_plan_stack.so'	
+			librarypath = lpath_base + '/unix/libfx_plan_stack.so'
 
 	try:
 		print("loading... " + librarypath)
@@ -307,7 +307,7 @@ def setMotorVoltage(devId, mV):
 
 # Sets the current setpoint for the given device
 # params:
-# 		devId 		: the id of the device 
+# 		devId 		: the id of the device
 # 		cur			: the current to use as setpoint in milliAmps
 def setMotorCurrent(devId, cur):
 	global flexsea
@@ -315,7 +315,7 @@ def setMotorCurrent(devId, cur):
 
 # Sets the position setpoint for the given device
 # params:
-# 		devId 		: the id of the device 
+# 		devId 		: the id of the device
 # 		pos			: the absolute encoder position to use as setpoint
 def setPosition(devId, pos):
 	global flexsea
@@ -339,12 +339,12 @@ def writeUser(devId,index, value):
 	flexsea.writeUser(devId,index,value)
 
 def readUser(devId):
- 	global flexsea
+	global flexsea
 	flexsea.readUser(devId)
 
 # Sets the PID controller gains for the given device
 # params:
-# 		devId 		: the id of the device 
+# 		devId 		: the id of the device
 # 		z_k			: the proportional gain to set for the active setpoint
 # 		z_b			: the integral gain to set for the active setpoint
 # 		i_kp		: the proportional gain to set for the underlying current controller (only relevant for impedance control)
@@ -355,7 +355,7 @@ def setZGains(devId, z_k, z_b, i_kp, i_ki):
 
 # Sets the activation state for FSM2 on the given device
 # params:
-# 		devId 		: the id of the device 
+# 		devId 		: the id of the device
 # 		on			: whether to set the FSM on or off
 def actPackFSM2(devId, on):
 	global flexsea
@@ -363,7 +363,7 @@ def actPackFSM2(devId, on):
 
 # Tells the given device to run a find poles routine
 # params:
-# 		devId 		: the id of the device 
+# 		devId 		: the id of the device
 # 		block 		: whether to block for 60 seconds while the device runs the routine
 def findPoles(devId, block):
 	global flexsea
@@ -392,7 +392,7 @@ def loadFlexsea():
 		if(is_64bits):
 			librarypath = lpath_base + '/unix64/libfx_plan_stack.so'
 		else:
-			librarypath = lpath_base + '/unix/libfx_plan_stack.so'	
+			librarypath = lpath_base + '/unix/libfx_plan_stack.so'
 
 	try:
 		print("loading... " + librarypath)
